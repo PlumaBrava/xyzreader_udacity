@@ -23,12 +23,10 @@ android:foreground="?selectableItemBackground">
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <!--suppress AndroidLintContentDescription -->
-    <!--<com.example.xyzreader.ui.DynamicHeightNetworkImageView-->
-    <!--android:id="@+id/thumbnail"-->
-    <!--android:layout_width="100dp"-->
-    <!--android:layout_height="100dp"-->
-    <!--android:background="@color/photo_placeholder" />-->
+
+    <!--Esto hace que se respete el tamano de cada imagen.-->
+    <!--android:scaleType="fitStart"-->
+    <!--android:adjustViewBounds="true"-->
 
     <ImageView
         android:id="@+id/thumbnail"

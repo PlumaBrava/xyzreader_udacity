@@ -1,14 +1,28 @@
 package com.nextnut.xyreader_udacity;
 
+
+
+
 import android.app.Activity;
+
+
+import android.database.Cursor;
+
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.support.v7.widget.CardView;
+import android.text.Html;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.nextnut.xyreader_udacity.data.ArticleLoader;
 import com.nextnut.xyreader_udacity.dummy.DummyContent;
 
 /**
@@ -17,18 +31,25 @@ import com.nextnut.xyreader_udacity.dummy.DummyContent;
  * in two-pane mode (on tablets) or a {@link ArticleDetailActivity}
  * on handsets.
  */
-public class ArticleDetailFragment extends Fragment {
+public class ArticleDetailFragment  extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_ITEM_FOTO = "item_foto";
 
     /**
      * The dummy content this fragment is presenting.
      */
     private DummyContent.DummyItem mItem;
 
+    private Cursor mCursor;
+    private long mItemId;
+    private CardView cardView;
+    private TextView actricle_detail_card_title;
+    private TextView getActricle_detail_card_descrition;
+    private CollapsingToolbarLayout appBarLayout;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -44,12 +65,14 @@ public class ArticleDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            mItemId = getArguments().getLong(ARG_ITEM_ID);
+            Log.i("jj","mItemId: "+Long.toString(mItemId));
+
 
             Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+             appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
+                appBarLayout.setTitle("Bar Title"+Long.toString(mItemId));
             }
         }
     }
@@ -60,10 +83,84 @@ public class ArticleDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.article_detail, container, false);
 
         // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.article_detail)).setText(mItem.details);
+//        if (mItem != null) {
+//            ((TextView) rootView.findViewById(R.id.article_detail)).setText("Titulo");
+//        }
+//        ((TextView) rootView.findViewById(R.id.article_detail)).setText("Titulo");
+        cardView =(CardView) rootView.findViewById(R.id.article_detail_card);
+        actricle_detail_card_title =(TextView) rootView.findViewById(R.id.article_detail_card_Title);
+        getActricle_detail_card_descrition =(TextView) rootView.findViewById(R.id.article_detail_card_Descrition);
+        if (appBarLayout != null) {
+            appBarLayout.setTitle("Bar Title"+Long.toString(mItemId));
         }
+
 
         return rootView;
     }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // In support library r8, calling initLoader for a fragment in a FragmentPagerAdapter in
+        // the fragment's onCreate may cause the same LoaderManager to be dealt to multiple
+        // fragments because their mIndex is -1 (haven't been added to the activity yet). Thus,
+        // we do this in onActivityCreated.
+
+
+        getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
+//        getLoaderManager().initLoader(0, null,this );
+    }
+
+
+    @Override
+    public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.i("jj", "Create Loader");
+        return ArticleLoader.newInstanceForItemId(getActivity(), mItemId);
+    }
+
+    @Override
+    public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
+        Log.i("jj", "On LoadFinishd");
+
+        mCursor= data;
+        if(mCursor!=null) {
+
+            Log.i("jj", "On LoadFinishd cursor not nul");
+
+            if (!mCursor.moveToFirst()) {
+
+                Log.i("jj", "Cursor  No tiene un elemento");
+
+            } else {
+
+                if (appBarLayout != null) {
+                    appBarLayout.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
+                }
+
+                Log.i("jj", "Curosor:  " + mCursor.toString());
+                Log.i("jj", "Title: " + mCursor.getString(ArticleLoader.Query.TITLE));
+//                actricle_detail_card_title.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+
+                actricle_detail_card_title.setText(Html.fromHtml(
+                        DateUtils.getRelativeTimeSpanString(
+                                mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
+                                System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
+                                DateUtils.FORMAT_ABBREV_ALL).toString()
+                                + " by <font color='#000000'>"
+                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
+                                + "</font>"));
+                Log.i("jj", "Autor: " + mCursor.getString(ArticleLoader.Query.AUTHOR));
+                getActricle_detail_card_descrition.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
+
+            }
+        }
+    }
+
+    @Override
+    public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
+
+    }
+
+
 }

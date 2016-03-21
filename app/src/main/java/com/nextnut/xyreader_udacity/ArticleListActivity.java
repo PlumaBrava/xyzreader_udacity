@@ -1,14 +1,16 @@
 package com.nextnut.xyreader_udacity;
 
-import android.app.LoaderManager;
+
 import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
+
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,9 +28,10 @@ import android.widget.TextView;
 
 
 import com.nextnut.xyreader_udacity.data.ArticleLoader;
+import com.nextnut.xyreader_udacity.data.ItemsContract;
 import com.nextnut.xyreader_udacity.data.UpdaterService;
 import com.nextnut.xyreader_udacity.dummy.DummyContent;
-import com.squareup.picasso.NetworkPolicy;
+
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -55,8 +58,8 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
+        getSupportLoaderManager().initLoader(0, null, this);
 
-        getLoaderManager().initLoader(0, null, this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -114,16 +117,10 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-//        RecyclerView.Adapter adapter = new RecyclerView.Adapter(cursor);
-//        adapter.setHasStableIds(true);
-//        mRecyclerView.setAdapter(adapter);
-//        int columnCount = getResources().getInteger(R.integer.list_column_count);
-//        StaggeredGridLayoutManager sglm =
-//                new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
-//        mRecyclerView.setLayoutManager(sglm);
         mAdapter.swapCursor(data);
     }
+
+
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
@@ -170,6 +167,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
             }
 
             mCursor.moveToPosition(position);
+            Log.i("jj", "ID: " + Long.toString(getItemId(position)));
             holder.marticle_title.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             holder.marticle_subtitle.setText(
                     DateUtils.getRelativeTimeSpanString(
@@ -181,7 +179,42 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
 
             Log.i("custom", "URL:  " + mCursor.getString(ArticleLoader.Query.THUMB_URL));
 
-                        Picasso.with(getApplicationContext()).load(mCursor.getString(ArticleLoader.Query.THUMB_URL)).into(holder.mthumbnail);
+
+//            PicassoCache.getPicassoInstance(getApplicationContext()).load(mCursor.getString(ArticleLoader.Query.THUMB_URL)).into(holder.mthumbnail);
+
+
+            Picasso.with(getApplicationContext())
+                    .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
+                    .into(holder.mthumbnail);
+
+            holder.fotoUrl=mCursor.getString(ArticleLoader.Query.PHOTO_URL);
+//                        Picasso.with(getApplicationContext())
+//                                .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
+//                                .networkPolicy(NetworkPolicy.OFFLINE)
+//                                .into(holder.mthumbnail, new Callback() {
+//                                    @Override
+//                                    public void onSuccess() {
+//                                        Log.i("Picasso", "Could fetch image from disk");
+//                                    }
+//
+//                                    @Override
+//                                    public void onError() {
+//                                        //Try again online if cache failed
+//                                        Picasso.with(getApplicationContext())
+//                                                .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
+//                                                .into(holder.mthumbnail, new Callback() {
+//                                                    @Override
+//                                                    public void onSuccess() {
+//                                                        Log.i("Picasso", "Could fetch image from web");
+//                                                    }
+//
+//                                                    @Override
+//                                                    public void onError() {
+//                                                        Log.i("Picasso", "Could not fetch image");
+//                                                    }
+//                                                });
+//                                    }
+//                                });
 
 
 //            holder.mItem = mValues.get(position);
@@ -193,7 +226,9 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(ArticleDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+
+//                        arguments.putLong(ArticleDetailFragment.ARG_ITEM_ID, ItemsContract.Items.buildItemUri(getItemId(holder.getAdapterPosition())));
+                        arguments.putLong(ArticleDetailFragment.ARG_ITEM_ID, 16);
                         ArticleDetailFragment fragment = new ArticleDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
@@ -202,7 +237,11 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ArticleDetailActivity.class);
-                        intent.putExtra(ArticleDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        Log.i("jj", "ID posicion cliced: "+Long.toString(getItemId(holder.getAdapterPosition())));
+                        intent.putExtra(ArticleDetailFragment.ARG_ITEM_ID, getItemId(holder.getAdapterPosition()));
+                        intent.putExtra(ArticleDetailFragment.ARG_ITEM_FOTO,holder.fotoUrl );
+//                        intent.putExtra(ArticleDetailFragment.ARG_ITEM_ID, ItemsContract.Items.buildItemUri(getItemId(holder.getAdapterPosition())));
+
 
                         context.startActivity(intent);
                     }
@@ -227,6 +266,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
             public final ImageView mthumbnail;
             public final TextView marticle_title;
             public final TextView marticle_subtitle;
+            public String fotoUrl;
             public DummyContent.DummyItem mItem;
 
             public ViewHolder(View view) {

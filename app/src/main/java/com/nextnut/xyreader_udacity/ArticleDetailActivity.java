@@ -10,6 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
+
+import java.net.URL;
 
 /**
  * An activity representing a single Article detail screen. This
@@ -54,14 +59,21 @@ public class ArticleDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(ArticleDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(ArticleDetailFragment.ARG_ITEM_ID));
+            arguments.putLong(ArticleDetailFragment.ARG_ITEM_ID, getIntent().getLongExtra(ArticleDetailFragment.ARG_ITEM_ID, 0));
             ArticleDetailFragment fragment = new ArticleDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.article_detail_container, fragment)
                     .commit();
-        }
+
+                    }
+
+        String fotoUrl= getIntent().getStringExtra(ArticleDetailFragment.ARG_ITEM_FOTO);
+        final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
+//        PicassoCache.getPicassoInstance(getApplicationContext()).load(mCursor.getString(ArticleLoader.Query.THUMB_URL)).into(holder.mthumbnail);
+
+//        Picasso.with(this).load("https://i.ytimg.com/vi/P9mR8V7Nn3U/hqdefault.jpg").into(imageView);
+        Picasso.with(this).load(fotoUrl).into(imageView);
     }
 
     @Override
