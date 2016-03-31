@@ -11,6 +11,8 @@ import android.database.Cursor;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+
+
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
@@ -36,6 +38,8 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
+
+    private static final String ARG_SECTION_NUMBER = "section_number";
     public static final String ARG_ITEM_ID = "item_id";
     public static final String ARG_ITEM_FOTO = "item_foto";
 
@@ -57,6 +61,14 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
     public ArticleDetailFragment() {
     }
 
+    public static ArticleDetailFragment newInstance( long arg_item_id) {
+        ArticleDetailFragment fragment = new ArticleDetailFragment();
+        Bundle args = new Bundle();
+        args.putLong(ARG_ITEM_ID,arg_item_id);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,14 +78,15 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             mItemId = getArguments().getLong(ARG_ITEM_ID);
-            Log.i("jj","mItemId: "+Long.toString(mItemId));
+            Log.i("jj","onCreate fragment mItemId: "+Long.toString(mItemId));
 
-
-            Activity activity = this.getActivity();
-             appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle("Bar Title"+Long.toString(mItemId));
-            }
+//            getSupportLoaderManager().initLoader(0, null, this);
+            getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
+//            Activity activity = this.getActivity();
+//             appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+//            if (appBarLayout != null) {
+//                appBarLayout.setTitle("Bar Title"+Long.toString(mItemId));
+//            }
         }
     }
 
@@ -81,7 +94,7 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.article_detail, container, false);
-
+        Log.i("jj", "onCreateView");
         // Show the dummy content as text in a TextView.
 //        if (mItem != null) {
 //            ((TextView) rootView.findViewById(R.id.article_detail)).setText("Titulo");
@@ -90,9 +103,6 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
         cardView =(CardView) rootView.findViewById(R.id.article_detail_card);
         actricle_detail_card_title =(TextView) rootView.findViewById(R.id.article_detail_card_Title);
         getActricle_detail_card_descrition =(TextView) rootView.findViewById(R.id.article_detail_card_Descrition);
-        if (appBarLayout != null) {
-            appBarLayout.setTitle("Bar Title"+Long.toString(mItemId));
-        }
 
 
         return rootView;
@@ -100,6 +110,7 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        Log.i("jj", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
 
         // In support library r8, calling initLoader for a fragment in a FragmentPagerAdapter in
@@ -108,29 +119,37 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
         // we do this in onActivityCreated.
 
 
-        getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
+//        getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
 //        getLoaderManager().initLoader(0, null,this );
     }
 
 
     @Override
-    public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.i("jj", "Create Loader");
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.i("jj", "Create Loader"+mItemId);
         return ArticleLoader.newInstanceForItemId(getActivity(), mItemId);
+
+
     }
 
+
+
+
+
+
+
     @Override
-    public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
-        Log.i("jj", "On LoadFinishd");
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.i("jj", "On LoadFinished"+mItemId);
 
         mCursor= data;
         if(mCursor!=null) {
 
-            Log.i("jj", "On LoadFinishd cursor not nul");
+            Log.i("jj", "On LoadFinished Fragmet cursor not nul"+mItemId);
 
             if (!mCursor.moveToFirst()) {
 
-                Log.i("jj", "Cursor  No tiene un elemento");
+                Log.i("jj", "On LoadFinished Fragmet Cursor  No tiene un elemento"+mItemId);
 
             } else {
 
@@ -138,8 +157,9 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
                     appBarLayout.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
                 }
 
-                Log.i("jj", "Curosor:  " + mCursor.toString());
-                Log.i("jj", "Title: " + mCursor.getString(ArticleLoader.Query.TITLE));
+                Log.i("jj", "On LoadFinished Fragmet Curosor:  " + mCursor.toString());
+                Log.i("jj", "On LoadFinished Fragmet Title: " +mItemId+":"+ mCursor.getString(ArticleLoader.Query.TITLE));
+                Log.i("jj", "On LoadFinished Fragmet Title: " +mItemId+":"+ mCursor.getString(ArticleLoader.Query.TITLE));
 //                actricle_detail_card_title.setText(mCursor.getString(ArticleLoader.Query.TITLE));
 
                 actricle_detail_card_title.setText(Html.fromHtml(
@@ -150,16 +170,22 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
                                 + " by <font color='#000000'>"
                                 + mCursor.getString(ArticleLoader.Query.AUTHOR)
                                 + "</font>"));
-                Log.i("jj", "Autor: " + mCursor.getString(ArticleLoader.Query.AUTHOR));
-                getActricle_detail_card_descrition.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
+                Log.i("jj", "On LoadFinished Fragmet Autor: " + mCursor.getString(ArticleLoader.Query.AUTHOR));
+                getActricle_detail_card_descrition.setText(
+                        mCursor.getString(ArticleLoader.Query._ID)+Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
 
             }
         }
+        else {
+            getActricle_detail_card_descrition.setText("nul cursor: "+mItemId);
+            Log.i("jj", "On LoadFinished Fragmet Cursor nulo"+mItemId);
+        }
+
     }
 
     @Override
-    public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
-
+    public void onLoaderReset(Loader<Cursor> loader) {
+        Log.i("jj", "onLoaderReset");
     }
 
 

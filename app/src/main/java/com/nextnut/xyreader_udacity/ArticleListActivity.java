@@ -9,6 +9,9 @@ import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -62,7 +65,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -79,13 +82,13 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
 
-        if (findViewById(R.id.article_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-        }
+//        if (findViewById(R.id.article_detail_container) != null) {
+//            // The detail container view will be present only in the
+//            // large-screen layouts (res/values-w900dp).
+//            // If this view is present, then the
+//            // activity should be in two-pane mode.
+//            mTwoPane = true;
+//        }
 
         if (savedInstanceState == null) {
             refresh();
@@ -163,11 +166,11 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
         public void onBindViewHolder(final ViewHolder holder, int position) {
 
             if(mCursor==null){
-                Log.i("custom", "cursor Nulo");
+                Log.i("List", "cursor Nulo");
             }
 
             mCursor.moveToPosition(position);
-            Log.i("jj", "ID: " + Long.toString(getItemId(position)));
+            Log.i("List", "ID: " + Long.toString(getItemId(position)));
             holder.marticle_title.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             holder.marticle_subtitle.setText(
                     DateUtils.getRelativeTimeSpanString(
@@ -237,7 +240,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ArticleDetailActivity.class);
-                        Log.i("jj", "ID posicion cliced: "+Long.toString(getItemId(holder.getAdapterPosition())));
+                        Log.i("jj", "lista: ID posicion cliced: "+Long.toString(getItemId(holder.getAdapterPosition())));
                         intent.putExtra(ArticleDetailFragment.ARG_ITEM_ID, getItemId(holder.getAdapterPosition()));
                         intent.putExtra(ArticleDetailFragment.ARG_ITEM_FOTO,holder.fotoUrl );
 //                        intent.putExtra(ArticleDetailFragment.ARG_ITEM_ID, ItemsContract.Items.buildItemUri(getItemId(holder.getAdapterPosition())));
@@ -307,4 +310,6 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
             return oldCursor;
         }
     }
+
+
 }
