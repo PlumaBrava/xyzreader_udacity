@@ -3,8 +3,8 @@ package com.nextnut.xyreader_udacity;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.LoaderManager;
+
+
 
 import android.support.v4.content.Loader;
 
@@ -13,8 +13,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentPagerAdapter;
-
+import android.support.v4.app.LoaderManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -97,20 +98,23 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
         if (savedInstanceState == null) {
             Log.i("DetailActivity", "Intenet Long ARG: " + Long.toString(getIntent().getLongExtra(ArticleDetailFragment.ARG_ITEM_ID, 0)));
             Log.i("DetailActivity", "OnCreate SavedInstance null: ");
-            if (getIntent() == null){Log.i("DetailActivity", "getIntent Null");}
-            if (getIntent().getData() == null){Log.i("DetailActivity", "getIntent().getData() Null");}
+            if (getIntent() == null) {
+                Log.i("DetailActivity", "getIntent Null");
+            }
+            if (getIntent().getData() == null) {
+                Log.i("DetailActivity", "getIntent().getData() Null");
+            }
 
-                if (getIntent() != null && getIntent().getLongExtra(ArticleDetailFragment.ARG_ITEM_ID, 0) != 0) {
+
+            if (getIntent() != null && getIntent().getLongExtra(ArticleDetailFragment.ARG_ITEM_ID, 0) != 0) {
 
 
-
-
-                    mStartId = getIntent().getLongExtra(ArticleDetailFragment.ARG_ITEM_ID, 0);
-                    Log.i("DetailActivity", "OnCreate mStartId: "+ mStartId);
+                mStartId = getIntent().getLongExtra(ArticleDetailFragment.ARG_ITEM_ID, 0);
+                Log.i("DetailActivity", "OnCreate mStartId: " + mStartId);
 //                    mSelectedItemId = mStartId;
-                }
+            }
 
-
+        }
 
             getSupportLoaderManager().initLoader(0, null, this);
 // Create the adapter that will return a fragment for each of the three
@@ -121,8 +125,10 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
             // Set up the ViewPager with the sections adapter.
             mViewPager = (ViewPager) findViewById(R.id.container);
             mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(3);
 
-            mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+//            mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
                 @Override
                 public void onPageScrollStateChanged(int state) {
                     super.onPageScrollStateChanged(state);
@@ -162,7 +168,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
 //                    .add(R.id.article_detail_container, fragment)
 //                    .commit();
 
-                    }
+//                    }
 
 //        String fotoUrl= getIntent().getStringExtra(ArticleDetailFragment.ARG_ITEM_FOTO);
        imageView = (ImageView) findViewById(R.id.backdrop);
@@ -190,9 +196,20 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
     }
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
-
+        
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+        }
+
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            super.setPrimaryItem(container, position, object);
+            Log.i("DetailActivity jj", "setPrimaryItem: " + position);
+            ArticleDetailFragment fragment = (ArticleDetailFragment) object;
+            if (fragment != null) {
+                Log.i("DetailActivity jj", "setPrimaryItem:  fragment != null" + position);
+
+            } else {  Log.i("DetailActivity jj", "setPrimaryItem:  fragment = null" + position);}
         }
 
         @Override
@@ -235,6 +252,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
 //            }
             return "SECTION:" + position;
         }
+
     }
 
     @Override

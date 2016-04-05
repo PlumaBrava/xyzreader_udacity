@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 
+
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
@@ -78,10 +79,10 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             mItemId = getArguments().getLong(ARG_ITEM_ID);
-            Log.i("jj","onCreate fragment mItemId: "+Long.toString(mItemId));
+            Log.i("jj", "onCreate fragment mItemId: " + Long.toString(mItemId));
 
 //            getSupportLoaderManager().initLoader(0, null, this);
-            getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
+           // getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
 //            Activity activity = this.getActivity();
 //             appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
 //            if (appBarLayout != null) {
@@ -118,9 +119,13 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
         // fragments because their mIndex is -1 (haven't been added to the activity yet). Thus,
         // we do this in onActivityCreated.
 
-
+        getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
 //        getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
 //        getLoaderManager().initLoader(0, null,this );
+
+
+
+
     }
 
 
@@ -171,6 +176,8 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
                                 + mCursor.getString(ArticleLoader.Query.AUTHOR)
                                 + "</font>"));
                 Log.i("jj", "On LoadFinished Fragmet Autor: " + mCursor.getString(ArticleLoader.Query.AUTHOR));
+
+                
                 getActricle_detail_card_descrition.setText(
                         mCursor.getString(ArticleLoader.Query._ID)+Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
 
