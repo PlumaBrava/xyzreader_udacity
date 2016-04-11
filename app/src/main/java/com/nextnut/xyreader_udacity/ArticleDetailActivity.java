@@ -1,11 +1,14 @@
 package com.nextnut.xyreader_udacity;
 
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
 
 
-
+import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.support.v4.content.Loader;
 
 import android.os.Bundle;
@@ -19,19 +22,25 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
+import android.support.v7.graphics.Palette;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.widget.ImageView;
 
 import com.nextnut.xyreader_udacity.data.ArticleLoader;
 import com.nextnut.xyreader_udacity.data.ItemsContract;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import java.net.URL;
+import java.security.PublicKey;
 
 /**
  * An activity representing a single Article detail screen. This
@@ -40,6 +49,20 @@ import java.net.URL;
  * in a {@link ArticleListActivity}.
  */
 public class ArticleDetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+
+    private View mUpButtonContainer;
+    private View mUpButton;
+
+
+
+    private long mSelectedItemId;
+    private int mSelectedItemUpButtonFloor = Integer.MAX_VALUE;
+    private int mTopInset;
+
+    private ViewPager mPager;
+
+
     private Cursor mCursor;
     private long mStartId;
     private SectionsPagerAdapter mSectionsPagerAdapter;
@@ -47,135 +70,93 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
     private ActionBar mactionBar;
     private ImageView imageView;
     private int position;
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
+    public Palette palette;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_article_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
-//        setSupportActionBar(toolbar);
-
-// Show the Up button in the action bar.
-        mactionBar = getSupportActionBar();
-        if (mactionBar != null) {
-            mactionBar.setDisplayHomeAsUpEnabled(true);
-            mactionBar.setDisplayShowTitleEnabled(true);
-            Log.i("DetailActivity", "mactionBar not Null");
-
-        }else {
-            Log.i("DetailActivity", "mactionBar Null");
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         }
+        setContentView(R.layout.activity_article_detail);
 
+        getSupportLoaderManager().initLoader(0, null, this);
 
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mPager = (ViewPager) findViewById(R.id.pager);
 
+        mPager.setAdapter(mSectionsPagerAdapter);
+        mPager.setOffscreenPageLimit(3);
+        mPager.setPageMargin((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics()));
+        mPager.setPageMarginDrawable(new ColorDrawable(0x22000000));
+        mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+                Log.i("Cursor", "onPageScrollStateChanged ");
+                mUpButton.animate()
+                        .alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f)
+                        .setDuration(300);
+            }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onPageSelected(int position) {
+                Log.i("Cursor", "onPageSelected: "+ position);
+                if (mCursor != null) {
+                    mCursor.moveToPosition(position);
+                }
+                mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
+                updateUpButtonPosition();
+            }
+        });
+
+        mUpButtonContainer = findViewById(R.id.up_container);
+
+        mUpButton = findViewById(R.id.action_up);
+        mUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                onSupportNavigateUp();
             }
         });
 
 
-
-        // savedInstanceState is non-null when there is fragment state
-        // saved from previous configurations of this activity
-        // (e.g. when rotating the screen from portrait to landscape).
-        // In this case, the fragment will automatically be re-added
-        // to its container so we don't need to manually add it.
-        // For more information, see the Fragments API guide at:
-        //
-        // http://developer.android.com/guide/components/fragments.html
-        //
-        if (savedInstanceState == null) {
-            Log.i("DetailActivity", "Intenet Long ARG: " + Long.toString(getIntent().getLongExtra(ArticleDetailFragment.ARG_ITEM_ID, 0)));
-            Log.i("DetailActivity", "OnCreate SavedInstance null: ");
-            if (getIntent() == null) {
-                Log.i("DetailActivity", "getIntent Null");
-            }
-            if (getIntent().getData() == null) {
-                Log.i("DetailActivity", "getIntent().getData() Null");
-            }
-
-
-            if (getIntent() != null && getIntent().getLongExtra(ArticleDetailFragment.ARG_ITEM_ID, 0) != 0) {
-
-
-                mStartId = getIntent().getLongExtra(ArticleDetailFragment.ARG_ITEM_ID, 0);
-                Log.i("DetailActivity", "OnCreate mStartId: " + mStartId);
-//                    mSelectedItemId = mStartId;
-            }
-
-        }
-
-            getSupportLoaderManager().initLoader(0, null, this);
-// Create the adapter that will return a fragment for each of the three
-            // primary sections of the activity.
-//            mSectionsPagerAdapter = new SectionsPagerAdapter(getChildFragmentManager());
-            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-            // Set up the ViewPager with the sections adapter.
-            mViewPager = (ViewPager) findViewById(R.id.container);
-            mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(3);
-
-//            mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                    super.onPageScrollStateChanged(state);
-                    Log.i("DetailActivity", "onPageScrollStateChanged" + state);
-//                    mUpButton.animate()
-//                            .alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f)
-//                            .setDuration(300);
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    Log.i("DetailActivity", "onPageSelected" + position);
-                    updateBar( position);
-
-//
-//
-//                    mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
-//                    updateUpButtonPosition();
-                    super.onPageSelected(position);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mUpButtonContainer.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+                @TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
+                @Override public WindowInsets onApplyWindowInsets(View view, WindowInsets windowInsets) {
+                    view.onApplyWindowInsets(windowInsets);
+                    mTopInset = windowInsets.getSystemWindowInsetTop();
+                    mUpButtonContainer.setTranslationY(mTopInset);
+                    updateUpButtonPosition();
+                    return windowInsets;
                 }
             });
+        }
 
+        if (savedInstanceState == null) {
+            if (getIntent() != null && getIntent().getExtras() != null) {
+                mStartId=getIntent().getExtras().getLong(ArticleDetailFragment.ARG_ITEM_ID);
+//                mStartId = ItemsContract.Items.getItemId(getIntent().getData());
+                mSelectedItemId = mStartId;
+            }
+        }
+    }
 
+    public void onUpButtonFloorChanged(long itemId, ArticleDetailFragment fragment) {
+        if (itemId == mSelectedItemId) {
+            mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
+            updateUpButtonPosition();
+        }
+    }
 
+    private void updateUpButtonPosition() {
+        int upButtonNormalBottom = mTopInset + mUpButton.getHeight();
+        mUpButton.setTranslationY(Math.min(mSelectedItemUpButtonFloor - upButtonNormalBottom, 0));
 
-
-
-
-
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
-//            Bundle arguments = new Bundle();
-//            arguments.putLong(ArticleDetailFragment.ARG_ITEM_ID, getIntent().getLongExtra(ArticleDetailFragment.ARG_ITEM_ID, 0));
-//            ArticleDetailFragment fragment = new ArticleDetailFragment();
-//            fragment.setArguments(arguments);
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.article_detail_container, fragment)
-//                    .commit();
-
-//                    }
-
-//        String fotoUrl= getIntent().getStringExtra(ArticleDetailFragment.ARG_ITEM_FOTO);
-       imageView = (ImageView) findViewById(R.id.backdrop);
-//        PicassoCache.getPicassoInstance(getApplicationContext()).load(mCursor.getString(ArticleLoader.Query.THUMB_URL)).into(holder.mthumbnail);
-
-//        Picasso.with(this).load("https://i.ytimg.com/vi/P9mR8V7Nn3U/hqdefault.jpg").into(imageView);
-//        Picasso.with(this).load(fotoUrl).into(imageView);
     }
 
     @Override
@@ -201,16 +182,33 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
             super(fm);
         }
 
+
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
             super.setPrimaryItem(container, position, object);
-            Log.i("DetailActivity jj", "setPrimaryItem: " + position);
             ArticleDetailFragment fragment = (ArticleDetailFragment) object;
             if (fragment != null) {
-                Log.i("DetailActivity jj", "setPrimaryItem:  fragment != null" + position);
-
-            } else {  Log.i("DetailActivity jj", "setPrimaryItem:  fragment = null" + position);}
+                mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
+                updateUpButtonPosition();
+            }
         }
+
+
+
+//        @Override
+//        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+//            super.setPrimaryItem(container, position, object);
+//            Log.i("DetailActivity jj", "setPrimaryItem: " + position);
+//            ArticleDetailFragment fragment = (ArticleDetailFragment) object;
+//            if (fragment != null) {
+//                Log.i("DetailActivity jj", "setPrimaryItem:  fragment != null" + position);
+//
+//            } else {  Log.i("DetailActivity jj", "setPrimaryItem:  fragment = null" + position);}
+//        }
+//
+//
+
+
 
         @Override
         public Fragment getItem(int position) {
@@ -218,6 +216,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
             // Return a PlaceholderFragment (defined as a static inner class below).
             Log.i("DetailActivity jj", "getItem, position: "+ position);
             Log.i("DetailActivity jj", "getItem ItemID: "+ getId(position));
+
             return ArticleDetailFragment.newInstance( getId(position));
         }
 
@@ -231,114 +230,57 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
             Log.i("DetailActivity jj", "getCount: "+ ((mCursor != null) ? mCursor.getCount() : 0));
             return (mCursor != null) ? mCursor.getCount() : 0;
         }
-//        @Override
-//        public void finishUpdate (ViewGroup container){
-//            Log.i("DetailActivity", "finishUpdate");
-////            mactionBar.setTitle(getPageTitle(currentPosition));
-//
-//        }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Log.i("DetailActivity ", "getPageTitle, position"+position);
 
-//            switch (position) {
-//                case 0:
-//                    return "SECTION 1";
-//                case 1:
-//                    return "SECTION 2";
-//                case 2:
-//                    return "SECTION 3";
-//            }
-            return "SECTION:" + position;
-        }
+
 
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        Log.i("DetailActivity", "On CreateLoader");
+        Log.i("Cursor", "onCreateLoader");
         return ArticleLoader.newAllArticlesInstance(this);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.i("Cursor", "onLoadFinished-mStartId: "+mStartId);
         mCursor =  data;
         mSectionsPagerAdapter.notifyDataSetChanged();
 
 
-        Log.i("DetailActivity", "On LoadFinished mStartId" +mStartId);
+
         // Select the start ID
         if (mStartId > 0) {
-            Log.i("DetailActivity", "On LoadFinished mStartId mayor cero" );
             mCursor.moveToFirst();
             // TODO: optimize
-            int i=0;
             while (!mCursor.isAfterLast()) {
-                Log.i("DetailActivity", "On LoadFinished curor _ID:" +mCursor.getLong(ArticleLoader.Query._ID));
+                Log.i("Cursor", "mCursor.getLong(ArticleLoader.Query._ID: "+ mCursor.getLong(ArticleLoader.Query._ID)+ "mStartId:"+mStartId);
                 if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
-                    position = mCursor.getPosition();
 
-                    currentPosition =mCursor.getPosition();
-                    Log.i("DetailActivity", "On LoadFinished Position Selected" + position);
-                    mViewPager.setCurrentItem(position, false);
-                    //el id del adapter es distinto al del cursor...
-                    if(position==0){updateBar(position);}
-//                    mViewPager.setCurrentItem(position);
-
-//                    mViewPager.postDelayed(new Runnable() {
-//
-//                        @Override
-//                        public void run() {
-//                            mViewPager.setCurrentItem(position);
-//                        }
-//                    }, 100);
-
+                    final int position = mCursor.getPosition();
+                    Log.i("Cursor", "getItem, position: "+ position);
+                    mPager.setCurrentItem(position, false);
                     break;
                 }
                 mCursor.moveToNext();
-                Log.i("DetailActivity", "On LoadFinished sin econtrar el ID" + mStartId);
             }
-//            mStartId = 0;
-            Log.i("DetailActivity", "On LoadFinished salio del loop");
+            mStartId = 0;
         }
+
+
 
     }
     public void onLoaderReset(Loader<Cursor> loader) {
         mCursor = null;
         mSectionsPagerAdapter.notifyDataSetChanged();
-        Log.i("DetailActivity", "On LoadReset");
-
-    }
-
-
-    public void updateBar(int position){
-    if (mCursor != null) {
-        Log.i("DetailActivity", "onPageSelected cursor not null " + position);
-        mCursor.moveToPosition(position);
-        mactionBar.setTitle(mCursor.getString(ArticleLoader.Query._ID) + mCursor.getString(ArticleLoader.Query.TITLE));
-
-        Picasso.with(getApplicationContext())
-                .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
-                .into(imageView);
-
-        if (mactionBar != null) {
-
-            Log.i("DetailActivity", "mactionBar not Null: "+mCursor.getString(ArticleLoader.Query._ID)+mCursor.getString(ArticleLoader.Query.TITLE));
-
-        }else {
-            Log.i("DetailActivity", "mactionBar Null"+mCursor.getString(ArticleLoader.Query._ID)+mCursor.getString(ArticleLoader.Query.TITLE));
-
-        }
-
+        Log.i("Cursor", "On LoadReset");
 
 
     }
-    else {
-        Log.i("DetailActivity", "onPageSelected cursor NULL " + position);
-    }
 
-    }
+
+
 
 
 }

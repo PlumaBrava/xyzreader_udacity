@@ -6,6 +6,16 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="card_margin">16dp</dimen>
 
+    <!-- List  -->
+    <dimen name="ListCardLeftMargin">0dp</dimen>
+    <dimen name="ListCardTopMargin">0dp</dimen>
+    <dimen name="ListCardRigthMargin">0dp</dimen>
+
+
+
+
+
+
 
     <!-- list -->
     <dimen name="list_side_margin">4dp</dimen>
@@ -27,8 +37,47 @@
     <dimen name="detail_title_text_size">32sp</dimen>
     <dimen name="detail_body_text_size">22sp</dimen>
     <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
+    <dimen name="article_detail_anchor_height">@dimen/match_parent</dimen>
+    <dimen name="article_detail_photo_max_width">500dp</dimen>
+    <dimen name="article_detail_content_margin_bottom">0dp</dimen>
 
     <dimen name="fab_elevation">2dp</dimen>
     <dimen name="fab_press_translation_z">6dp</dimen>
+
+    <!-- Spacings -->
+    <dimen name="item_spacing_half">4dp</dimen>
+    <dimen name="item_spacing_full">8dp</dimen>
+    <dimen name="element_spacing_small">4dp</dimen>
+    <dimen name="element_spacing_normal">8dp</dimen>
+    <dimen name="element_spacing_large">16dp</dimen>
+    <dimen name="content_padding_normal">16dp</dimen>
+    <dimen name="content_padding_large">24dp</dimen>
+    <item name="match_parent" type="dimen">-1</item>
+    <item name="wrap_content" type="dimen">-2</item>
+
+    <!-- detail -->
+    <bool name="article_detail_is_card">false</bool>
+    <dimen name="article_detail_card_top_margin">304dp</dimen>
+    <dimen name="article_detail_card_max_width">10000dp</dimen> <!-- force match_parent -->
+    <dimen name="article_detail_body_bottom_margin">88dp</dimen>
+
+
+    <!-- Keylines -->
+    <dimen name="keyline_1">16dp</dimen>
+    <dimen name="keyline_1_minus_8dp">8dp</dimen>
+    <dimen name="keyline_2">72dp</dimen>
+    <dimen name="keyline_2_minus_16dp">56dp</dimen>
+
+    <!-- Texts -->
+    <dimen name="text_size_xsmall">11sp</dimen>
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+    <dimen name="text_size_xlarge">20sp</dimen>
+    <dimen name="text_size_xxlarge">24sp</dimen>
+    <dimen name="text_size_diff_large_small">6sp</dimen>
+
+    <item name="article_detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
+
 
 </resources>

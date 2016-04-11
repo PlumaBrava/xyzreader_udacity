@@ -1,5 +1,12 @@
 <resources>
 
+
+    <style name="ArticleDetailAnchor">
+        <item name="android:layout_alignTop">@id/article_detail_photo_container</item>
+        <item name="android:layout_alignBottom">@id/article_detail_photo_container</item>
+    </style>
+
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
@@ -23,6 +30,18 @@
         <item name="android:paddingTop">24dp</item>
         <item name="android:paddingBottom">24dp</item>
         <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="ActionBar.PopupThemeOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ActionBar.TitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/body_text_white</item>
+        <item name="android:textSize">@dimen/text_size_large</item>
+    </style>
+
+    <style name="ActionBar.Subtitle" parent="TextAppearance.AppCompat.Widget.ActionBar.Subtitle">
+        <item name="android:textColor">@color/body_text_white</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
 
 </resources>

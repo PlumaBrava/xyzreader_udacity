@@ -4,39 +4,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context=".MainActivity">
+    <!--android:fitsSystemWindows="true"-->
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+
+        >
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:minHeight="0dp"
+
+
+        app:layout_scrollFlags="scroll|enterAlways"
+    android:background="?colorPrimary"
+        android:elevation="4dp"
+
+        >
+        <!--android:minHeight="?attr/actionBarSize"-->
+        <!--app:popupTheme="@style/ActionBar.PopupThemeOverlay"-->
+
+
+
+            <!--android:theme="@style/AppTheme.AppBarOverlay"-->
+
+
+            <!--android:layout_height="?actionBarSize"-->
+            <!--android:background="?colorPrimary"-->
+            <!--android:theme="@style/ActionBar.ThemeOverlay"-->
+            <!--app:layout_scrollFlags="scroll|enterAlways"-->
+            <!--app:popupTheme="@style/ActionBar.PopupThemeOverlay"-->
+            <!--app:titleTextAppearance="@style/ActionBar.TitleText"-->
+
+            <!--app:popupTheme="@style/AppTheme.PopupOverlay"-->
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/logo" />
+
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    <!--<FrameLayout-->
+        <!--android:id="@+id/frameLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!-->-->
 
         <include layout="@layout/article_list" />
-    </FrameLayout>
+    <!--</FrameLayout>-->
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email" />
+
 
 
 </android.support.design.widget.CoordinatorLayout>

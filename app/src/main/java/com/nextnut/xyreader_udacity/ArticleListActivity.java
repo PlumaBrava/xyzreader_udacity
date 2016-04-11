@@ -13,8 +13,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -30,11 +33,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.bumptech.glide.Glide;
+import com.github.florent37.glidepalette.BitmapPalette;
+import com.github.florent37.glidepalette.GlidePalette;
 import com.nextnut.xyreader_udacity.data.ArticleLoader;
 import com.nextnut.xyreader_udacity.data.ItemsContract;
 import com.nextnut.xyreader_udacity.data.UpdaterService;
 import com.nextnut.xyreader_udacity.dummy.DummyContent;
 
+import com.nextnut.xyreader_udacity.widget.CustomImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -66,16 +73,20 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) ab.setTitle("");
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
+//        toolbar.setTitle(getTitle());
+
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
         View recyclerView = findViewById(R.id.article_list);
         mAdapter =new Adapter(null);
@@ -165,6 +176,9 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
 
+
+
+
             if(mCursor==null){
                 Log.i("List", "cursor Nulo");
             }
@@ -172,6 +186,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
             mCursor.moveToPosition(position);
             Log.i("List", "ID: " + Long.toString(getItemId(position)));
             holder.marticle_title.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+            holder.mthumbnail.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
             holder.marticle_subtitle.setText(
                     DateUtils.getRelativeTimeSpanString(
                             mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
@@ -186,10 +201,52 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
 //            PicassoCache.getPicassoInstance(getApplicationContext()).load(mCursor.getString(ArticleLoader.Query.THUMB_URL)).into(holder.mthumbnail);
 
 
-            Picasso.with(getApplicationContext())
+            Glide.with(getBaseContext())
                     .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
+                    .placeholder(R.color.photo_placeholder)
+                    .listener(GlidePalette.with(mCursor.getString(ArticleLoader.Query.THUMB_URL)).intoCallBack(new BitmapPalette.CallBack() {
+                        @Override public void onPaletteLoaded(Palette palette) {
+                            Palette.Swatch swatch = palette.getVibrantSwatch();
+
+                            int mColorBackground;
+                            int mColorTextTitle;
+                            int mColorTextSubtitle;
+
+                            mColorBackground = ContextCompat.getColor(getApplicationContext(), R.color.theme_primary);
+                            mColorTextTitle = ContextCompat.getColor(getApplicationContext(), R.color.body_text_white);
+                            mColorTextSubtitle = ContextCompat.getColor(getApplicationContext(), R.color.body_text_1_inverse);
+
+
+                            holder.marticle_title.setBackgroundColor(mColorBackground);
+                            holder.marticle_subtitle.setBackgroundColor(mColorBackground);
+                            holder.marticle_title.setTextColor(mColorTextTitle);
+                            holder.marticle_subtitle.setTextColor(mColorTextSubtitle);
+
+
+                            if (swatch != null) {
+
+
+                                mColorBackground = swatch.getRgb();
+                                mColorTextTitle = swatch.getBodyTextColor();
+                                mColorTextSubtitle = swatch.getTitleTextColor();
+
+                                holder.marticle_title.setBackgroundColor(mColorBackground);
+                                holder.marticle_subtitle.setBackgroundColor(mColorBackground);
+                                holder.marticle_title.setTextColor(mColorTextTitle);
+                                holder.marticle_subtitle.setTextColor(mColorTextSubtitle);
+                                Log.i("Glide", "Pallet actualizado "+mCursor.getString(ArticleLoader.Query.TITLE));
+                            }
+                            else{Log.i("Glide", "Pallet Null "+mCursor.getString(ArticleLoader.Query.TITLE));}
+
+                        }
+                    }))
                     .into(holder.mthumbnail);
 
+//
+//            Picasso.with(getApplicationContext())
+//                    .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
+//                    .into(holder.mthumbnail);
+//
             holder.fotoUrl=mCursor.getString(ArticleLoader.Query.PHOTO_URL);
 //                        Picasso.with(getApplicationContext())
 //                                .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
@@ -240,9 +297,10 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ArticleDetailActivity.class);
-                        Log.i("jj", "lista: ID posicion cliced: "+Long.toString(getItemId(holder.getAdapterPosition())));
+                        Log.i("jj", "lista: ID posicion cliced: " + Long.toString(getItemId(holder.getAdapterPosition())));
+
                         intent.putExtra(ArticleDetailFragment.ARG_ITEM_ID, getItemId(holder.getAdapterPosition()));
-                        intent.putExtra(ArticleDetailFragment.ARG_ITEM_FOTO,holder.fotoUrl );
+//                        intent.putExtra(ArticleDetailFragment.ARG_ITEM_FOTO,holder.fotoUrl );
 //                        intent.putExtra(ArticleDetailFragment.ARG_ITEM_ID, ItemsContract.Items.buildItemUri(getItemId(holder.getAdapterPosition())));
 
 
@@ -266,7 +324,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
             public final View mView;
 //            public final TextView mIdView;
 //            public final TextView mContentView;
-            public final ImageView mthumbnail;
+            public final CustomImageView mthumbnail;
             public final TextView marticle_title;
             public final TextView marticle_subtitle;
             public String fotoUrl;
@@ -275,7 +333,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mthumbnail =(ImageView)view.findViewById(R.id.thumbnail);
+                mthumbnail =(CustomImageView)view.findViewById(R.id.thumbnail);
                 marticle_title = (TextView) view.findViewById(R.id.article_title);
                 marticle_subtitle = (TextView) view.findViewById(R.id.article_subtitle);
             }

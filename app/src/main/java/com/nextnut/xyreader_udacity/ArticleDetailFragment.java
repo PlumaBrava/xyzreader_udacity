@@ -3,30 +3,43 @@ package com.nextnut.xyreader_udacity;
 
 
 
-import android.app.Activity;
-
-
+import android.content.Intent;
 import android.database.Cursor;
 
-import android.support.design.widget.CollapsingToolbarLayout;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.Nullable;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 
 
 
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.CardView;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.format.DateUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.github.florent37.glidepalette.BitmapPalette;
+import com.github.florent37.glidepalette.GlidePalette;
 import com.nextnut.xyreader_udacity.data.ArticleLoader;
-import com.nextnut.xyreader_udacity.dummy.DummyContent;
+import com.nextnut.xyreader_udacity.widget.CustomImageView;
+import com.nextnut.xyreader_udacity.widget.DrawInsetsFrameLayout;
+import com.nextnut.xyreader_udacity.widget.ObservableScrollView;
+import com.squareup.picasso.Transformation;
 
 /**
  * A fragment representing a single Article detail screen.
@@ -35,26 +48,57 @@ import com.nextnut.xyreader_udacity.dummy.DummyContent;
  * on handsets.
  */
 public class ArticleDetailFragment  extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
-     */
-
-    private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final String TAG = ArticleDetailFragment.class.getSimpleName();
     public static final String ARG_ITEM_ID = "item_id";
-    public static final String ARG_ITEM_FOTO = "item_foto";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem mItem;
+    private static final String STATE_SCROLL_VIEW = "state_scroll";
+    private static final float PARALLAX_FACTOR = 1.25f;
+
+    private View mRootView;
+
+    private CustomImageView mPhotoView;
+    private View mPhotoContainerView;
+    private TextView mTitleTextView;
+    private TextView mBylineTextView;
+    private TextView mBodyTextView;
+    private View mContentContainerView;
+    private View mMetaBarView;
+    private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
+    private ObservableScrollView mScrollView;
+
+    private boolean mIsCard;
+    private boolean mhasNotImagen=true;
+    private int mStatusBarFullOpacityBottom;
+
+    private int mColorBackground;
+    private int mColorTextTitle;
+    private int mColorTextSubtitle;
 
     private Cursor mCursor;
     private long mItemId;
-    private CardView cardView;
-    private TextView actricle_detail_card_title;
-    private TextView getActricle_detail_card_descrition;
-    private CollapsingToolbarLayout appBarLayout;
+    private ColorDrawable mStatusBarColorDrawable;
+
+    private FloatingActionButton mfab;
+
+    private int mTopInset;
+    private int mScrollY;
+    Palette.Swatch swatch ;
+
+    public final class PaletteTransformation implements Transformation {
+        @Override public Bitmap transform(Bitmap source) {
+            // TODO Palette all the things!
+            Palette palette = Palette.from(source).generate();
+            swatch = palette.getVibrantSwatch();
+
+//            Palette p = Palette.generate(source, 12);
+            return source;
+        }
+
+        @Override public String key() {
+            return ""; // Stable key for all requests. An unfortunate requirement.
+        }
+    }
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -70,43 +114,160 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
             mItemId = getArguments().getLong(ARG_ITEM_ID);
-            Log.i("jj", "onCreate fragment mItemId: " + Long.toString(mItemId));
-
-//            getSupportLoaderManager().initLoader(0, null, this);
-           // getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
-//            Activity activity = this.getActivity();
-//             appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-//            if (appBarLayout != null) {
-//                appBarLayout.setTitle("Bar Title"+Long.toString(mItemId));
-//            }
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.article_detail, container, false);
-        Log.i("jj", "onCreateView");
-        // Show the dummy content as text in a TextView.
-//        if (mItem != null) {
-//            ((TextView) rootView.findViewById(R.id.article_detail)).setText("Titulo");
+
+
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//
+//        if (getArguments().containsKey(ARG_ITEM_ID)) {
+//            // Load the dummy content specified by the fragment
+//            // arguments. In a real-world scenario, use a Loader
+//            // to load content from a content provider.
+//            mItemId = getArguments().getLong(ARG_ITEM_ID);
+//            Log.i("jj", "onCreate fragment mItemId: " + Long.toString(mItemId));
+//
+////            getSupportLoaderManager().initLoader(0, null, this);
+//           // getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
+////            Activity activity = this.getActivity();
+////             appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+////            if (appBarLayout != null) {
+////                appBarLayout.setTitle("Bar Title"+Long.toString(mItemId));
+////            }
 //        }
-//        ((TextView) rootView.findViewById(R.id.article_detail)).setText("Titulo");
-        cardView =(CardView) rootView.findViewById(R.id.article_detail_card);
-        actricle_detail_card_title =(TextView) rootView.findViewById(R.id.article_detail_card_Title);
-        getActricle_detail_card_descrition =(TextView) rootView.findViewById(R.id.article_detail_card_Descrition);
+//    }
 
 
-        return rootView;
+    public ArticleDetailActivity getActivityCast() {
+        return (ArticleDetailActivity) getActivity();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+
+        mRootView = inflater.inflate(R.layout.article_detail, container, false);
+
+        mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
+                mRootView.findViewById(R.id.draw_insets_frame_layout);
+//        mDrawInsetsFrameLayout.setOnInsetsCallback(new DrawInsetsFrameLayout.OnInsetsCallback() {
+//            @Override
+//            public void onInsetsChanged(Rect insets) {
+//                mTopInset = insets.top;
+//            }
+//        });
+
+        mScrollView = (ObservableScrollView) mRootView.findViewById(R.id.scrollview);
+//        mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
+//            @Override
+//            public void onScrollChanged() {
+//                mScrollY = mScrollView.getScrollY();
+//                getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
+//                mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
+//                updateStatusBar();
+//            }
+//        });
+//
+//
+
+
+
+       mPhotoView=(CustomImageView)mRootView.findViewById(R.id.article_detail_photo);
+       mPhotoContainerView=(View)mRootView.findViewById(R.id.article_detail_photo_container);
+       mTitleTextView=(TextView) mRootView.findViewById(R.id.article_detail_title);
+
+
+        mBylineTextView=(TextView)mRootView.findViewById(R.id.article_detail_byline);
+        mBodyTextView=(TextView)mRootView.findViewById(R.id.article_detail_body);
+        mContentContainerView=(View)mRootView.findViewById(R.id.article_detail_content_container);
+        mMetaBarView=(View)mRootView.findViewById(R.id.article_detail_meta_bar);
+
+        mfab= (FloatingActionButton) mRootView.findViewById(R.id.article_detail_share_fab);
+        mfab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
+                        .setType("text/plain")
+                        .setText("Read this Article: " + mCursor.getString(ArticleLoader.Query.TITLE))
+                        .getIntent(), getString(R.string.action_share)));
+
+            }
+        });
+
+
+
+        mIsCard=getResources().getBoolean(R.bool.article_detail_is_card);
+        mStatusBarFullOpacityBottom=(int)getResources().getDimension(R.dimen.article_detail_card_top_margin);
+
+
+
+
+            mColorBackground = ContextCompat.getColor(getContext(), R.color.theme_primary);
+            mColorTextTitle = ContextCompat.getColor(getContext(), R.color.body_text_white);
+            mColorTextSubtitle = ContextCompat.getColor(getContext(), R.color.body_text_1_inverse);
+
+
+
+
+        return mRootView;
+    }
+
+
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                             Bundle savedInstanceState) {
+//        View rootView = inflater.inflate(R.layout.article_detail, container, false);
+//        Log.i("jj", "onCreateView");
+//        // Show the dummy content as text in a TextView.
+////        if (mItem != null) {
+////            ((TextView) rootView.findViewById(R.id.article_detail)).setText("Titulo");
+////        }
+////        ((TextView) rootView.findViewById(R.id.article_detail)).setText("Titulo");
+//        cardView =(CardView) rootView.findViewById(R.id.article_detail_card);
+//        actricle_detail_card_title =(TextView) rootView.findViewById(R.id.article_detail_card_Title);
+//        getActricle_detail_card_descrition =(TextView) rootView.findViewById(R.id.article_detail_card_Descrition);
+//
+//
+//        return rootView;
+//    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mDrawInsetsFrameLayout.setOnInsetsCallback(new DrawInsetsFrameLayout.OnInsetsCallback() {
+            @Override
+            public void onInsetsChanged(Rect insets) {
+                mTopInset = insets.top;
+            }
+        });
+
+        mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
+            @Override
+            public void onScrollChanged() {
+                mScrollY = mScrollView.getScrollY();
+                getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
+                mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
+                updateStatusBar();
+            }
+        });
+
+        ViewCompat.setElevation(mContentContainerView, getResources().getDimension(R.dimen.cardview_default_elevation));
+        mBylineTextView.setMovementMethod(new LinkMovementMethod());
+
+        mStatusBarColorDrawable = new ColorDrawable(0);
+        updateStatusBar();
     }
 
     @Override
@@ -129,71 +290,234 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
     }
 
 
+
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.i("jj", "Create Loader"+mItemId);
+        Log.i("jj", "Create Loader" + mItemId);
         return ArticleLoader.newInstanceForItemId(getActivity(), mItemId);
-
-
     }
-
-
-
-
-
 
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i("jj", "On LoadFinished"+mItemId);
-
-        mCursor= data;
-        if(mCursor!=null) {
-
-            Log.i("jj", "On LoadFinished Fragmet cursor not nul"+mItemId);
-
-            if (!mCursor.moveToFirst()) {
-
-                Log.i("jj", "On LoadFinished Fragmet Cursor  No tiene un elemento"+mItemId);
-
-            } else {
-
-                if (appBarLayout != null) {
-                    appBarLayout.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
-                }
-
-                Log.i("jj", "On LoadFinished Fragmet Curosor:  " + mCursor.toString());
-                Log.i("jj", "On LoadFinished Fragmet Title: " +mItemId+":"+ mCursor.getString(ArticleLoader.Query.TITLE));
-                Log.i("jj", "On LoadFinished Fragmet Title: " +mItemId+":"+ mCursor.getString(ArticleLoader.Query.TITLE));
-//                actricle_detail_card_title.setText(mCursor.getString(ArticleLoader.Query.TITLE));
-
-                actricle_detail_card_title.setText(Html.fromHtml(
-                        DateUtils.getRelativeTimeSpanString(
-                                mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
-                                System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
-                                DateUtils.FORMAT_ABBREV_ALL).toString()
-                                + " by <font color='#000000'>"
-                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                                + "</font>"));
-                Log.i("jj", "On LoadFinished Fragmet Autor: " + mCursor.getString(ArticleLoader.Query.AUTHOR));
-
-                
-                getActricle_detail_card_descrition.setText(
-                        mCursor.getString(ArticleLoader.Query._ID)+Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
-
+    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        if (!isAdded()) {
+            if (cursor != null) {
+                cursor.close();
             }
-        }
-        else {
-            getActricle_detail_card_descrition.setText("nul cursor: "+mItemId);
-            Log.i("jj", "On LoadFinished Fragmet Cursor nulo"+mItemId);
+            return;
         }
 
+        mCursor = cursor;
+        if (mCursor != null && !mCursor.moveToFirst()) {
+            Log.e(TAG, "Error reading item detail cursor");
+            mCursor.close();
+            mCursor = null;
+        }
+
+        bindViews();
     }
+
+//    @Override
+//    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+//        Log.i("jj", "On LoadFinished"+mItemId);
+//
+//        mCursor= data;
+//        if(mCursor!=null) {
+//
+//            Log.i("jj", "On LoadFinished Fragmet cursor not nul" + mItemId);
+//
+//            if (!mCursor.moveToFirst()) {
+//
+//                Log.i("jj", "On LoadFinished Fragmet Cursor  No tiene un elemento"+mItemId);
+//
+//            } else {
+//
+//                if (appBarLayout != null) {
+//                    appBarLayout.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
+//                }
+//
+//                Log.i("jj", "On LoadFinished Fragmet Curosor:  " + mCursor.toString());
+//                Log.i("jj", "On LoadFinished Fragmet Title: " + mItemId + ":" + mCursor.getString(ArticleLoader.Query.TITLE));
+//                Log.i("jj", "On LoadFinished Fragmet Title: " + mItemId + ":" + mCursor.getString(ArticleLoader.Query.TITLE));
+////                actricle_detail_card_title.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+//
+//                actricle_detail_card_title.setText(Html.fromHtml(
+//                        DateUtils.getRelativeTimeSpanString(
+//                                mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
+//                                System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
+//                                DateUtils.FORMAT_ABBREV_ALL).toString()
+//                                + " by <font color='#000000'>"
+//                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
+//                                + "</font>"));
+//                Log.i("jj", "On LoadFinished Fragmet Autor: " + mCursor.getString(ArticleLoader.Query.AUTHOR));
+//
+//
+//                getActricle_detail_card_descrition.setText(
+//                        mCursor.getString(ArticleLoader.Query._ID) + Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
+//
+//                Log.i("jj", "Palette Fragmet" + ((ArticleDetailActivity) getActivity()).getPalette());
+//
+//                Picasso.with(getContext())
+//                        .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
+//                        .fit().centerCrop()
+//                        .transform(new PaletteTransformation())
+//                        .into(((ArticleDetailActivity)getActivity()).getImageView(), new Callback.EmptyCallback() {
+//                            @Override
+//                            public void onSuccess() {
+//
+//                                Log.i("DetailActivity", "Picasso Callback " );
+//                    }
+//                });
+//
+//
+//
+//
+//
+//
+//                if (swatch != null) {
+//                    actricle_detail_card_title.setBackgroundColor(swatch.getRgb());
+//                    actricle_detail_card_title.setTextColor(swatch.getTitleTextColor());
+//                }
+//
+//                        }
+//            }
+//        else {
+//            getActricle_detail_card_descrition.setText("nul cursor: " + mItemId);
+//            Log.i("jj", "On LoadFinished Fragmet Cursor nulo"+mItemId);
+//        }
+//
+//    }
+
+    private void bindViews() {
+        if (mRootView == null) {
+            return;
+        }
+
+        if (mCursor != null) {
+            mRootView.setAlpha(0);
+            mRootView.setVisibility(View.VISIBLE);
+            mRootView.animate().alpha(1);
+            mTitleTextView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+            mBylineTextView.setText(Html.fromHtml(
+                    getString(R.string.article_detail_byline,
+                            DateUtils.getRelativeTimeSpanString(
+                                    mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
+                                    System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
+                                    DateUtils.FORMAT_ABBREV_ALL).toString(),
+                            mCursor.getString(ArticleLoader.Query.AUTHOR))));
+            if(mBodyTextView==null)
+            {Log.i("jj", "mBodyTextView" + " NullBodyTextView");}
+            if(mCursor.getString(ArticleLoader.Query.BODY)!=null) {
+                Log.i("jj", "mBodyTextView" + mCursor.getString(ArticleLoader.Query.BODY));
+                mBodyTextView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
+                mBodyTextView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
+            }else {
+                Log.i("jj", "mBodyTextView" + "  null");
+            }
+
+            mPhotoView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+            String photoUrl = mCursor.getString(ArticleLoader.Query.PHOTO_URL);
+
+
+//            Picasso.with(getContext())
+//                        .load(photoUrl)
+//                        .fit().centerCrop()
+//                    .transform(new PaletteTransformation())
+//                        .into(mPhotoView, new Callback.EmptyCallback() {
+//                            @Override
+//                            public void onSuccess() {
+//
+//                            if (swatch != null) {
+//                                mColorBackground = swatch.getRgb();
+//                                mColorTextTitle = swatch.getBodyTextColor();
+//                                mColorTextSubtitle = swatch.getTitleTextColor();
+//
+//                                mMetaBarView.setBackgroundColor(mColorBackground);
+//                                mTitleTextView.setTextColor(mColorTextTitle);
+//                                mBylineTextView.setTextColor(mColorTextSubtitle);
+//                                mhasNotImagen=false;
+//                            }
+//                            updateStatusBar();
+//
+//                                Log.i("DetailActivity", "Picasso Callback " );
+//                    }
+//                });
+
+            Log.i("Glide", "pedido ID: "+mCursor.getString(ArticleLoader.Query.TITLE));
+            Glide.with(this)
+                    .load(photoUrl)
+                    .placeholder(R.color.photo_placeholder)
+                    .listener(GlidePalette.with(photoUrl).intoCallBack(new BitmapPalette.CallBack() {
+                        @Override public void onPaletteLoaded(Palette palette) {
+                            Palette.Swatch swatch = palette.getVibrantSwatch();
+                            if (swatch != null) {
+                                mColorBackground = swatch.getRgb();
+                                mColorTextTitle = swatch.getBodyTextColor();
+                                mColorTextSubtitle = swatch.getTitleTextColor();
+
+                                mMetaBarView.setBackgroundColor(mColorBackground);
+                                mTitleTextView.setTextColor(mColorTextTitle);
+                                mBylineTextView.setTextColor(mColorTextSubtitle);
+                                Log.i("Glide", "Pallet actualizado "+mCursor.getString(ArticleLoader.Query.TITLE));
+                            }
+                            else{Log.i("Glide", "Pallet Null "+mCursor.getString(ArticleLoader.Query.TITLE));}
+                            updateStatusBar();
+                        }
+                    }))
+                    .into(mPhotoView);
+        } else {
+            mRootView.setVisibility(View.GONE);
+            mTitleTextView.setText("N/A");
+            mBylineTextView.setText("N/A");
+            mBodyTextView.setText("N/A");
+        }
+    }
+
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.i("jj", "onLoaderReset");
     }
 
+    public int getUpButtonFloor() {
+        if (mPhotoContainerView == null || mPhotoView.getHeight() == 0) {
+            return Integer.MAX_VALUE;
+        }
+
+        // account for parallax
+        return mIsCard
+                ? (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY
+                : mPhotoView.getHeight() - mScrollY;
+    }
+
+    private void updateStatusBar() {
+        int color = 0;
+        if (mPhotoView != null && mTopInset != 0 && mScrollY > 0) {
+            float f = progress(mScrollY,
+                    mStatusBarFullOpacityBottom - mTopInset * 3,
+                    mStatusBarFullOpacityBottom - mTopInset);
+            color = Color.argb((int) (255 * f),
+                    (int) (Color.red(mColorBackground) * 0.9),
+                    (int) (Color.green(mColorBackground) * 0.9),
+                    (int) (Color.blue(mColorBackground) * 0.9));
+        }
+        mStatusBarColorDrawable.setColor(color);
+        mDrawInsetsFrameLayout.setInsetBackground(mStatusBarColorDrawable);
+    }
+
+    static float progress(float v, float min, float max) {
+        return constrain((v - min) / (max - min), 0, 1);
+    }
+
+    static float constrain(float val, float min, float max) {
+        if (val < min) {
+            return min;
+        } else if (val > max) {
+            return max;
+        } else {
+            return val;
+        }
+    }
 
 }

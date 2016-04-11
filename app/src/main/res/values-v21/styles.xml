@@ -1,4 +1,9 @@
-<resources>>
+<resources>
+
+
+    <style name="Theme.Bacon.Detail" parent="Theme.Bacon">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
