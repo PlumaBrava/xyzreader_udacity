@@ -1,0 +1,36 @@
+<resources>
+
+
+    <!--<style name="ArticleDetailAnchor">-->
+        <!--<item name="android:layout_alignTop">@id/article_detail_photo_container</item>-->
+    <!--</style>-->
+
+    <!-- Base application theme. -->
+    <!--<style name="Theme.Bacon.Details" parent="Theme.AppCompat.Light.Dialog.MinWidth"></style>-->
+    <style name="Theme.Bacon.Detail" parent="Base.Theme.AppCompat.Light.DialogWhenLarge">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:background">@android:color/transparent</item>
+
+    </style>
+
+    <!--<style name="AppTheme.NoActionBar">-->
+        <!--<item name="windowActionBar">false</item>-->
+        <!--<item name="windowNoTitle">true</item>-->
+    <!--</style>-->
+
+    <!--<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />-->
+
+    <!--<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />-->
+
+    <!--<style name="Widget.CardContent" parent="android:Widget">-->
+        <!--<item name="android:paddingLeft">16dp</item>-->
+        <!--<item name="android:paddingRight">16dp</item>-->
+        <!--<item name="android:paddingTop">24dp</item>-->
+        <!--<item name="android:paddingBottom">24dp</item>-->
+        <!--<item name="android:orientation">vertical</item>-->
+    <!--</style>-->
+
+</resources>

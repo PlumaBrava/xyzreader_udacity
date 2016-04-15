@@ -21,6 +21,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -30,6 +32,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.graphics.Palette;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowInsets;
 import android.widget.ImageView;
 
@@ -78,6 +81,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         }
@@ -96,7 +100,6 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
             @Override
             public void onPageScrollStateChanged(int state) {
                 super.onPageScrollStateChanged(state);
-                Log.i("Cursor", "onPageScrollStateChanged ");
                 mUpButton.animate()
                         .alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f)
                         .setDuration(300);
@@ -140,7 +143,6 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
         if (savedInstanceState == null) {
             if (getIntent() != null && getIntent().getExtras() != null) {
                 mStartId=getIntent().getExtras().getLong(ArticleDetailFragment.ARG_ITEM_ID);
-//                mStartId = ItemsContract.Items.getItemId(getIntent().getData());
                 mSelectedItemId = mStartId;
             }
         }
@@ -195,27 +197,12 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
 
 
 
-//        @Override
-//        public void setPrimaryItem(ViewGroup container, int position, Object object) {
-//            super.setPrimaryItem(container, position, object);
-//            Log.i("DetailActivity jj", "setPrimaryItem: " + position);
-//            ArticleDetailFragment fragment = (ArticleDetailFragment) object;
-//            if (fragment != null) {
-//                Log.i("DetailActivity jj", "setPrimaryItem:  fragment != null" + position);
-//
-//            } else {  Log.i("DetailActivity jj", "setPrimaryItem:  fragment = null" + position);}
-//        }
-//
-//
-
 
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            Log.i("DetailActivity jj", "getItem, position: "+ position);
-            Log.i("DetailActivity jj", "getItem ItemID: "+ getId(position));
 
             return ArticleDetailFragment.newInstance( getId(position));
         }
@@ -227,7 +214,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
 
         @Override
         public int getCount() {
-            Log.i("DetailActivity jj", "getCount: "+ ((mCursor != null) ? mCursor.getCount() : 0));
+
             return (mCursor != null) ? mCursor.getCount() : 0;
         }
 
@@ -238,13 +225,11 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        Log.i("Cursor", "onCreateLoader");
-        return ArticleLoader.newAllArticlesInstance(this);
+           return ArticleLoader.newAllArticlesInstance(this);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i("Cursor", "onLoadFinished-mStartId: "+mStartId);
         mCursor =  data;
         mSectionsPagerAdapter.notifyDataSetChanged();
 
@@ -255,11 +240,8 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
             mCursor.moveToFirst();
             // TODO: optimize
             while (!mCursor.isAfterLast()) {
-                Log.i("Cursor", "mCursor.getLong(ArticleLoader.Query._ID: "+ mCursor.getLong(ArticleLoader.Query._ID)+ "mStartId:"+mStartId);
                 if (mCursor.getLong(ArticleLoader.Query._ID) == mStartId) {
-
                     final int position = mCursor.getPosition();
-                    Log.i("Cursor", "getItem, position: "+ position);
                     mPager.setCurrentItem(position, false);
                     break;
                 }
@@ -274,13 +256,7 @@ public class ArticleDetailActivity extends AppCompatActivity implements LoaderMa
     public void onLoaderReset(Loader<Cursor> loader) {
         mCursor = null;
         mSectionsPagerAdapter.notifyDataSetChanged();
-        Log.i("Cursor", "On LoadReset");
-
 
     }
-
-
-
-
 
 }

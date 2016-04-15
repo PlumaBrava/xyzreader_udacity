@@ -5,4 +5,8 @@
     <string name="action_share">Share</string>
     <!-- Details -->
     <string name="article_detail_byline">%1$s by <font color='#ffffff'>%2$s</font></string>
+    <string name="transition_photo">transition_photo</string>
+
+
+
 </resources>

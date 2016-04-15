@@ -4,63 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ArticleListActivity">
     <!--android:fitsSystemWindows="true"-->
 
     <android.support.design.widget.AppBarLayout
 
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        >
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:minHeight="0dp"
+            android:elevation="4dp"
+            app:layout_scrollFlags="scroll|enterAlways"
+            android:background="?colorPrimary">
 
 
-        app:layout_scrollFlags="scroll|enterAlways"
-    android:background="?colorPrimary"
-        android:elevation="4dp"
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/logo" />
 
-        >
-        <!--android:minHeight="?attr/actionBarSize"-->
-        <!--app:popupTheme="@style/ActionBar.PopupThemeOverlay"-->
+            </android.support.v7.widget.Toolbar>
 
-
-
-            <!--android:theme="@style/AppTheme.AppBarOverlay"-->
+        </android.support.design.widget.AppBarLayout>
 
 
-            <!--android:layout_height="?actionBarSize"-->
-            <!--android:background="?colorPrimary"-->
-            <!--android:theme="@style/ActionBar.ThemeOverlay"-->
-            <!--app:layout_scrollFlags="scroll|enterAlways"-->
-            <!--app:popupTheme="@style/ActionBar.PopupThemeOverlay"-->
-            <!--app:titleTextAppearance="@style/ActionBar.TitleText"-->
 
-            <!--app:popupTheme="@style/AppTheme.PopupOverlay"-->
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/logo" />
-
-        </android.support.v7.widget.Toolbar>
-
-    </android.support.design.widget.AppBarLayout>
-
-    <!--<FrameLayout-->
-        <!--android:id="@+id/frameLayout"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!-->-->
-
-        <include layout="@layout/article_list" />
-    <!--</FrameLayout>-->
+    <include layout="@layout/article_list" />
 
 
 

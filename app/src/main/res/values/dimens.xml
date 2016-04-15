@@ -1,18 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="app_bar_height">200dp</dimen>
     <dimen name="item_width">200dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="card_margin">16dp</dimen>
 
-    <!-- List  -->
+    <!-- JJ: List  Imagen of Activity List-->
     <dimen name="ListCardLeftMargin">0dp</dimen>
     <dimen name="ListCardTopMargin">0dp</dimen>
     <dimen name="ListCardRigthMargin">0dp</dimen>
 
+    <item name="placeholder_article_aspect_ratio" format="float" type="fraction">1.503671072</item>
 
 
+    <!-- JJ: List  Title of Activity List-->
+    <dimen name="ListArticleTitletLeft">16dp</dimen>
+    <dimen name="ListArticleTitletTop">16dp</dimen>
+    <dimen name="ListArticleTitletRight">16dp</dimen>
+    <dimen name="ListArticleTitletBottom">4dp</dimen>
+
+
+    <!-- JJ: List  SubTitle of Activity List-->
+    <dimen name="ListArticleSubTitletLeft">16dp</dimen>
+    <dimen name="ListArticleSubTitletTop">16dp</dimen>
+    <dimen name="ListArticleSubTitletRight">16dp</dimen>
+    <dimen name="ListArticleSubTitletBottom">4dp</dimen>
 
 
 
@@ -43,6 +58,9 @@
 
     <dimen name="fab_elevation">2dp</dimen>
     <dimen name="fab_press_translation_z">6dp</dimen>
+
+    <dimen name="fab_compat_margin">16dp</dimen>
+    <dimen name="fab_compat_border">0dp</dimen>
 
     <!-- Spacings -->
     <dimen name="item_spacing_half">4dp</dimen>

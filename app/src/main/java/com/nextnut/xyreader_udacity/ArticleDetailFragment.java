@@ -26,10 +26,13 @@ import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -84,20 +87,7 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
     private int mScrollY;
     Palette.Swatch swatch ;
 
-    public final class PaletteTransformation implements Transformation {
-        @Override public Bitmap transform(Bitmap source) {
-            // TODO Palette all the things!
-            Palette palette = Palette.from(source).generate();
-            swatch = palette.getVibrantSwatch();
 
-//            Palette p = Palette.generate(source, 12);
-            return source;
-        }
-
-        @Override public String key() {
-            return ""; // Stable key for all requests. An unfortunate requirement.
-        }
-    }
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -126,29 +116,6 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
     }
 
 
-
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        if (getArguments().containsKey(ARG_ITEM_ID)) {
-//            // Load the dummy content specified by the fragment
-//            // arguments. In a real-world scenario, use a Loader
-//            // to load content from a content provider.
-//            mItemId = getArguments().getLong(ARG_ITEM_ID);
-//            Log.i("jj", "onCreate fragment mItemId: " + Long.toString(mItemId));
-//
-////            getSupportLoaderManager().initLoader(0, null, this);
-//           // getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
-////            Activity activity = this.getActivity();
-////             appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-////            if (appBarLayout != null) {
-////                appBarLayout.setTitle("Bar Title"+Long.toString(mItemId));
-////            }
-//        }
-//    }
-
-
     public ArticleDetailActivity getActivityCast() {
         return (ArticleDetailActivity) getActivity();
     }
@@ -161,25 +128,10 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
 
         mDrawInsetsFrameLayout = (DrawInsetsFrameLayout)
                 mRootView.findViewById(R.id.draw_insets_frame_layout);
-//        mDrawInsetsFrameLayout.setOnInsetsCallback(new DrawInsetsFrameLayout.OnInsetsCallback() {
-//            @Override
-//            public void onInsetsChanged(Rect insets) {
-//                mTopInset = insets.top;
-//            }
-//        });
+
 
         mScrollView = (ObservableScrollView) mRootView.findViewById(R.id.scrollview);
-//        mScrollView.setCallbacks(new ObservableScrollView.Callbacks() {
-//            @Override
-//            public void onScrollChanged() {
-//                mScrollY = mScrollView.getScrollY();
-//                getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
-//                mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
-//                updateStatusBar();
-//            }
-//        });
-//
-//
+
 
 
 
@@ -224,23 +176,7 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
     }
 
 
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//        View rootView = inflater.inflate(R.layout.article_detail, container, false);
-//        Log.i("jj", "onCreateView");
-//        // Show the dummy content as text in a TextView.
-////        if (mItem != null) {
-////            ((TextView) rootView.findViewById(R.id.article_detail)).setText("Titulo");
-////        }
-////        ((TextView) rootView.findViewById(R.id.article_detail)).setText("Titulo");
-//        cardView =(CardView) rootView.findViewById(R.id.article_detail_card);
-//        actricle_detail_card_title =(TextView) rootView.findViewById(R.id.article_detail_card_Title);
-//        getActricle_detail_card_descrition =(TextView) rootView.findViewById(R.id.article_detail_card_Descrition);
-//
-//
-//        return rootView;
-//    }
+
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -263,7 +199,7 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
             }
         });
 
-        ViewCompat.setElevation(mContentContainerView, getResources().getDimension(R.dimen.cardview_default_elevation));
+//        ViewCompat.setElevation(mContentContainerView, getResources().getDimension(R.dimen.cardview_default_elevation));
         mBylineTextView.setMovementMethod(new LinkMovementMethod());
 
         mStatusBarColorDrawable = new ColorDrawable(0);
@@ -281,11 +217,6 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
         // we do this in onActivityCreated.
 
         getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
-//        getLoaderManager().initLoader(0, null, (ArticleDetailFragment.this));
-//        getLoaderManager().initLoader(0, null,this );
-
-
-
 
     }
 
@@ -318,76 +249,6 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
         bindViews();
     }
 
-//    @Override
-//    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-//        Log.i("jj", "On LoadFinished"+mItemId);
-//
-//        mCursor= data;
-//        if(mCursor!=null) {
-//
-//            Log.i("jj", "On LoadFinished Fragmet cursor not nul" + mItemId);
-//
-//            if (!mCursor.moveToFirst()) {
-//
-//                Log.i("jj", "On LoadFinished Fragmet Cursor  No tiene un elemento"+mItemId);
-//
-//            } else {
-//
-//                if (appBarLayout != null) {
-//                    appBarLayout.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
-//                }
-//
-//                Log.i("jj", "On LoadFinished Fragmet Curosor:  " + mCursor.toString());
-//                Log.i("jj", "On LoadFinished Fragmet Title: " + mItemId + ":" + mCursor.getString(ArticleLoader.Query.TITLE));
-//                Log.i("jj", "On LoadFinished Fragmet Title: " + mItemId + ":" + mCursor.getString(ArticleLoader.Query.TITLE));
-////                actricle_detail_card_title.setText(mCursor.getString(ArticleLoader.Query.TITLE));
-//
-//                actricle_detail_card_title.setText(Html.fromHtml(
-//                        DateUtils.getRelativeTimeSpanString(
-//                                mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
-//                                System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
-//                                DateUtils.FORMAT_ABBREV_ALL).toString()
-//                                + " by <font color='#000000'>"
-//                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
-//                                + "</font>"));
-//                Log.i("jj", "On LoadFinished Fragmet Autor: " + mCursor.getString(ArticleLoader.Query.AUTHOR));
-//
-//
-//                getActricle_detail_card_descrition.setText(
-//                        mCursor.getString(ArticleLoader.Query._ID) + Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
-//
-//                Log.i("jj", "Palette Fragmet" + ((ArticleDetailActivity) getActivity()).getPalette());
-//
-//                Picasso.with(getContext())
-//                        .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
-//                        .fit().centerCrop()
-//                        .transform(new PaletteTransformation())
-//                        .into(((ArticleDetailActivity)getActivity()).getImageView(), new Callback.EmptyCallback() {
-//                            @Override
-//                            public void onSuccess() {
-//
-//                                Log.i("DetailActivity", "Picasso Callback " );
-//                    }
-//                });
-//
-//
-//
-//
-//
-//
-//                if (swatch != null) {
-//                    actricle_detail_card_title.setBackgroundColor(swatch.getRgb());
-//                    actricle_detail_card_title.setTextColor(swatch.getTitleTextColor());
-//                }
-//
-//                        }
-//            }
-//        else {
-//            getActricle_detail_card_descrition.setText("nul cursor: " + mItemId);
-//            Log.i("jj", "On LoadFinished Fragmet Cursor nulo"+mItemId);
-//        }
-//
-//    }
 
     private void bindViews() {
         if (mRootView == null) {
@@ -419,30 +280,6 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
             mPhotoView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
             String photoUrl = mCursor.getString(ArticleLoader.Query.PHOTO_URL);
 
-
-//            Picasso.with(getContext())
-//                        .load(photoUrl)
-//                        .fit().centerCrop()
-//                    .transform(new PaletteTransformation())
-//                        .into(mPhotoView, new Callback.EmptyCallback() {
-//                            @Override
-//                            public void onSuccess() {
-//
-//                            if (swatch != null) {
-//                                mColorBackground = swatch.getRgb();
-//                                mColorTextTitle = swatch.getBodyTextColor();
-//                                mColorTextSubtitle = swatch.getTitleTextColor();
-//
-//                                mMetaBarView.setBackgroundColor(mColorBackground);
-//                                mTitleTextView.setTextColor(mColorTextTitle);
-//                                mBylineTextView.setTextColor(mColorTextSubtitle);
-//                                mhasNotImagen=false;
-//                            }
-//                            updateStatusBar();
-//
-//                                Log.i("DetailActivity", "Picasso Callback " );
-//                    }
-//                });
 
             Log.i("Glide", "pedido ID: "+mCursor.getString(ArticleLoader.Query.TITLE));
             Glide.with(this)
@@ -519,5 +356,6 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
             return val;
         }
     }
+
 
 }

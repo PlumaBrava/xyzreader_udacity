@@ -27,6 +27,7 @@
                     android:id="@+id/article_detail_photo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:transitionName="@string/transition_photo"
                     android:maxHeight="@dimen/article_detail_photo_max_width"
                     android:scaleType="centerCrop"
                     app:aspectRatio="@dimen/placeholder_article_aspect_ratio" />
@@ -38,17 +39,13 @@
 
             </FrameLayout>
 
-            <View
-                android:id="@+id/anchor"
-                style="@style/ArticleDetailAnchor"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/article_detail_anchor_height" />
+
 
             <LinearLayout
                 android:id="@+id/article_detail_content_container"
                 android:layout_width="@dimen/article_detail_card_max_width"
                 android:layout_height="match_parent"
-                android:layout_below="@id/anchor"
+                android:layout_below="@+id/article_detail_photo_container"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="@dimen/article_detail_content_margin_bottom"
                 android:background="#fff"
@@ -110,13 +107,18 @@
         android:layout_marginBottom="@dimen/fab_compat_margin"
         android:layout_marginEnd="@dimen/fab_compat_margin"
         android:layout_marginRight="@dimen/fab_compat_margin"
+
         android:background="@drawable/add_fab_background"
+
+        android:stateListAnimator="@anim/fab_state_list_anim"
+
         android:onClick="onShareFab"
         android:contentDescription="@string/action_share"
         android:src="@drawable/ic_share"
-        android:stateListAnimator="@anim/fab_state_list_anim"
+
         app:elevation="@dimen/fab_elevation"
-        app:pressedTranslationZ="12dp"
+
         app:rippleColor="@android:color/white" />
 
 </com.nextnut.xyreader_udacity.widget.DrawInsetsFrameLayout>
+    <!--app:pressedTranslationZ="12dp"-->
