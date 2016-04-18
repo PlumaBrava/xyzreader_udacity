@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:minHeight="0dp"
-            android:elevation="4dp"
+            android:elevation="@dimen/activity_article_list_toolbarelevation"
             app:layout_scrollFlags="scroll|enterAlways"
             android:background="?colorPrimary">
 

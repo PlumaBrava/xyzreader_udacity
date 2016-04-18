@@ -69,7 +69,7 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
     private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
     private ObservableScrollView mScrollView;
 
-    private boolean mIsCard;
+//    private boolean mIsCard;
     private boolean mhasNotImagen=true;
     private int mStatusBarFullOpacityBottom;
 
@@ -159,7 +159,7 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
 
 
 
-        mIsCard=getResources().getBoolean(R.bool.article_detail_is_card);
+//        mIsCard=getResources().getBoolean(R.bool.article_detail_is_card);
         mStatusBarFullOpacityBottom=(int)getResources().getDimension(R.dimen.article_detail_card_top_margin);
 
 
@@ -323,9 +323,12 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
         }
 
         // account for parallax
-        return mIsCard
-                ? (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY
-                : mPhotoView.getHeight() - mScrollY;
+//        return mIsCard
+//                ? (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY
+//                : mPhotoView.getHeight() - mScrollY;
+
+        return mPhotoView.getHeight() - mScrollY;
+
     }
 
     private void updateStatusBar() {

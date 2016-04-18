@@ -28,7 +28,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:transitionName="@string/transition_photo"
-                    android:maxHeight="@dimen/article_detail_photo_max_width"
+                    android:maxHeight="@dimen/article_detail_photo_max_maxHeight"
                     android:scaleType="centerCrop"
                     app:aspectRatio="@dimen/placeholder_article_aspect_ratio" />
 
@@ -66,7 +66,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/element_spacing_small"
-                        android:lineSpacingMultiplier="0.9"
+                        android:lineSpacingMultiplier="@fraction/article_detail_title_layout_marginBottom"
                         android:textColor="@color/body_text_1_inverse"
                         android:textSize="@dimen/text_size_large"
                         android:textStyle="bold"
@@ -92,7 +92,7 @@
                     android:paddingBottom="@dimen/article_detail_body_bottom_margin"
                     android:textColor="@color/body_text_1"
                     android:textColorLink="@color/theme_accent"
-                    android:textSize="@dimen/text_size_medium"
+                    android:textSize="@dimen/text_size_mediumbody"
                     tools:text="@string/placeholder_article_body" />
 
             </LinearLayout>
@@ -115,7 +115,7 @@
         android:onClick="onShareFab"
         android:contentDescription="@string/action_share"
         android:src="@drawable/ic_share"
-
+        app:pressedTranslationZ="@dimen/fab_press_translation_z"
         app:elevation="@dimen/fab_elevation"
 
         app:rippleColor="@android:color/white" />
