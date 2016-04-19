@@ -1,8 +1,10 @@
 
 package com.nextnut.xyreader_udacity.data;
 
+
 import android.content.ContentProvider;
 import android.content.ContentProviderOperation;
+
 import android.content.ContentProviderResult;
 import android.content.ContentValues;
 import android.content.OperationApplicationException;

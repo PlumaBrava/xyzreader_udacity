@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="theme_primary">@color/material_green500</color>
+    <color name="theme_primary_dark">@color/material_green700</color>
+    <color name="theme_accent">@color/material_greenA400</color>
+
+    <color name="photo_placeholder">@color/material_green600</color>
+    <color name="article_palette_color">@color/material_green500</color>
+
+</resources>

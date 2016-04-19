@@ -1,37 +1,48 @@
 package com.nextnut.xyreader_udacity;
 
-import android.app.LoaderManager;
+
 import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
+
 import android.database.Cursor;
 import android.database.DataSetObserver;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import android.support.v4.app.ActivityOptionsCompat;
+
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.graphics.Palette;
+
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+
 import android.widget.TextView;
 
 
-import com.nextnut.xyreader_udacity.data.ArticleLoader;
-import com.nextnut.xyreader_udacity.data.UpdaterService;
-import com.nextnut.xyreader_udacity.dummy.DummyContent;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.github.florent37.glidepalette.BitmapPalette;
+import com.github.florent37.glidepalette.GlidePalette;
 
-import java.util.List;
+import com.nextnut.xyreader_udacity.data.ArticleLoader;
+
+import com.nextnut.xyreader_udacity.data.UpdaterService;
+
+
+import com.nextnut.xyreader_udacity.widget.CustomImageView;
+
 
 /**
  * An activity representing a list of Articles. This activity
@@ -43,51 +54,34 @@ import java.util.List;
  */
 public class ArticleListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
-    private boolean mTwoPane;
 
     private Adapter mAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
+        getSupportLoaderManager().initLoader(0, null, this);
 
-        getLoaderManager().initLoader(0, null, this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) ab.setTitle("");
+
 
         View recyclerView = findViewById(R.id.article_list);
-        mAdapter =new Adapter(null);
+        mAdapter = new Adapter(null);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
-
-        if (findViewById(R.id.article_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-        }
 
         if (savedInstanceState == null) {
             refresh();
         }
+
     }
+
     private void refresh() {
         startService(new Intent(this, UpdaterService.class));
     }
@@ -99,31 +93,22 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
                 new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(sglm);
 
-//        recyclerView.setLayoutManager(
-//                new LinearLayoutManager(recyclerView.getContext())
-//        );
+
         recyclerView.setAdapter(mAdapter);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        return   ArticleLoader.newAllArticlesInstance(this);
+        return ArticleLoader.newAllArticlesInstance(this);
 
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-//        RecyclerView.Adapter adapter = new RecyclerView.Adapter(cursor);
-//        adapter.setHasStableIds(true);
-//        mRecyclerView.setAdapter(adapter);
-//        int columnCount = getResources().getInteger(R.integer.list_column_count);
-//        StaggeredGridLayoutManager sglm =
-//                new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
-//        mRecyclerView.setLayoutManager(sglm);
         mAdapter.swapCursor(data);
     }
+
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
@@ -131,7 +116,19 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
         mAdapter.swapCursor(null);
     }
 
-    public class Adapter  extends RecyclerView.Adapter<Adapter.ViewHolder> {
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
+
+    public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
         private Cursor mCursor;
         private DataSetObserver mDataSetObserver;
@@ -142,11 +139,6 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
             mCursor = cursor;
         }
 
-//        private final List<DummyContent.DummyItem> mValues;
-//
-//        public Adapter(List<DummyContent.DummyItem> items) {
-//            mValues = items;
-//        }
 
         @Override
         public long getItemId(int position) {
@@ -165,12 +157,15 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
 
-            if(mCursor==null){
-                Log.i("custom", "cursor Nulo");
-            }
+
+            if (mCursor == null) {
+                Log.i("List", "cursor Nulo");
+            } else{
 
             mCursor.moveToPosition(position);
+            Log.i("List", "ID: " + Long.toString(getItemId(position)));
             holder.marticle_title.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+            holder.mthumbnail.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
             holder.marticle_subtitle.setText(
                     DateUtils.getRelativeTimeSpanString(
                             mCursor.getLong(ArticleLoader.Query.PUBLISHED_DATE),
@@ -181,66 +176,97 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
 
             Log.i("custom", "URL:  " + mCursor.getString(ArticleLoader.Query.THUMB_URL));
 
-                        Picasso.with(getApplicationContext()).load(mCursor.getString(ArticleLoader.Query.THUMB_URL)).into(holder.mthumbnail);
+
+            Glide.with(getBaseContext())
+                    .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
+                    .placeholder(R.color.photo_placeholder)
+                    .listener(GlidePalette.with(mCursor.getString(ArticleLoader.Query.THUMB_URL)).intoCallBack(new BitmapPalette.CallBack() {
+                        @Override
+                        public void onPaletteLoaded(Palette palette) {
+                            Palette.Swatch swatch = palette.getVibrantSwatch();
+
+                            int mColorBackground;
+                            int mColorTextTitle;
+                            int mColorTextSubtitle;
+
+                            mColorBackground = ContextCompat.getColor(getApplicationContext(), R.color.theme_primary);
+                            mColorTextTitle = ContextCompat.getColor(getApplicationContext(), R.color.body_text_white);
+                            mColorTextSubtitle = ContextCompat.getColor(getApplicationContext(), R.color.body_text_1_inverse);
 
 
-//            holder.mItem = mValues.get(position);
-//            holder.mIdView.setText(mValues.get(position).id);
-//            holder.mContentView.setText(mValues.get(position).content);
+                            holder.marticle_title.setBackgroundColor(mColorBackground);
+                            holder.marticle_subtitle.setBackgroundColor(mColorBackground);
+                            holder.marticle_title.setTextColor(mColorTextTitle);
+                            holder.marticle_subtitle.setTextColor(mColorTextSubtitle);
+
+
+                            if (swatch != null) {
+
+
+                                mColorBackground = swatch.getRgb();
+                                mColorTextTitle = swatch.getBodyTextColor();
+                                mColorTextSubtitle = swatch.getTitleTextColor();
+
+                                holder.marticle_title.setBackgroundColor(mColorBackground);
+                                holder.marticle_subtitle.setBackgroundColor(mColorBackground);
+                                holder.marticle_title.setTextColor(mColorTextTitle);
+                                holder.marticle_subtitle.setTextColor(mColorTextSubtitle);
+//                                Log.i("Glide", "Pallet actualizado " + mCursor.getString(ArticleLoader.Query.TITLE));
+                            }
+
+                        }
+                    }))
+                    .into(holder.mthumbnail);
+
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(ArticleDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-                        ArticleDetailFragment fragment = new ArticleDetailFragment();
-                        fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.article_detail_container, fragment)
-                                .commit();
-                    } else {
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, ArticleDetailActivity.class);
-                        intent.putExtra(ArticleDetailFragment.ARG_ITEM_ID, holder.mItem.id);
 
-                        context.startActivity(intent);
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, ArticleDetailActivity.class);
+                    intent.putExtra(ArticleDetailFragment.ARG_ITEM_ID, getItemId(holder.getAdapterPosition()));
+                    Bundle bundle = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                        bundle = ActivityOptionsCompat
+                                .makeSceneTransitionAnimation(ArticleListActivity.this, v.findViewById(R.id.thumbnail), v.findViewById(R.id.thumbnail).getTransitionName())
+                                .toBundle();
                     }
+//                        overridePendingTransition(R.anim.zoom_back_in, R.anim.zoom_back_out);
+                    context.startActivity(intent, bundle);
+
                 }
             });
 
         }
+        }
 
         @Override
         public int getItemCount() {
-            int cantidad=0;
-            if (mCursor!=null){
-                cantidad= mCursor.getCount();
+            int cantidad = 0;
+            if (mCursor != null) {
+                cantidad = mCursor.getCount();
             }
             return cantidad;
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
-//            public final TextView mIdView;
-//            public final TextView mContentView;
-            public final ImageView mthumbnail;
+
+            public final CustomImageView mthumbnail;
             public final TextView marticle_title;
             public final TextView marticle_subtitle;
-            public DummyContent.DummyItem mItem;
+            public String fotoUrl;
+
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mthumbnail =(ImageView)view.findViewById(R.id.thumbnail);
+                mthumbnail = (CustomImageView) view.findViewById(R.id.thumbnail);
                 marticle_title = (TextView) view.findViewById(R.id.article_title);
                 marticle_subtitle = (TextView) view.findViewById(R.id.article_subtitle);
             }
 
-//            @Override
-//            public String toString() {
-//                return super.toString() + " '" + mContentView.getText() + "'";
-//            }
         }
 
         public Cursor swapCursor(Cursor newCursor) {
@@ -252,14 +278,14 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
                 oldCursor.unregisterDataSetObserver(mDataSetObserver);
             }
             mCursor = newCursor;
-            if(mCursor != null){
-                if(mDataSetObserver != null){
+            if (mCursor != null) {
+                if (mDataSetObserver != null) {
                     mCursor.registerDataSetObserver(mDataSetObserver);
                 }
                 mRowIdColumn = newCursor.getColumnIndexOrThrow("_id");
                 mDataIsValid = true;
                 notifyDataSetChanged();
-            }else{
+            } else {
                 mRowIdColumn = -1;
                 mDataIsValid = false;
                 notifyDataSetChanged();
@@ -267,4 +293,6 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
             return oldCursor;
         }
     }
+
+
 }
