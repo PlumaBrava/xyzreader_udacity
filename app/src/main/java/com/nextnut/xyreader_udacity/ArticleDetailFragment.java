@@ -6,7 +6,7 @@ package com.nextnut.xyreader_udacity;
 import android.content.Intent;
 import android.database.Cursor;
 
-import android.graphics.Bitmap;
+
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -21,18 +21,17 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
-import android.support.v4.view.ViewCompat;
+
 import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
+
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -42,7 +41,7 @@ import com.nextnut.xyreader_udacity.data.ArticleLoader;
 import com.nextnut.xyreader_udacity.widget.CustomImageView;
 import com.nextnut.xyreader_udacity.widget.DrawInsetsFrameLayout;
 import com.nextnut.xyreader_udacity.widget.ObservableScrollView;
-import com.squareup.picasso.Transformation;
+
 
 /**
  * A fragment representing a single Article detail screen.
@@ -298,7 +297,9 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
                                 mBylineTextView.setTextColor(mColorTextSubtitle);
                                 Log.i("Glide", "Pallet actualizado "+mCursor.getString(ArticleLoader.Query.TITLE));
                             }
-                            else{Log.i("Glide", "Pallet Null "+mCursor.getString(ArticleLoader.Query.TITLE));}
+//                            else{
+//                                Log.i("Glide", "Pallet Null "+mCursor.getString(ArticleLoader.Query.TITLE));
+//                            }
                             updateStatusBar();
                         }
                     }))

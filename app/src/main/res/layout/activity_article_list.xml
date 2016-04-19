@@ -19,7 +19,7 @@
             android:minHeight="0dp"
             android:elevation="@dimen/activity_article_list_toolbarelevation"
             app:layout_scrollFlags="scroll|enterAlways"
-            android:background="?colorPrimary">
+            android:background="@color/theme_primary">
 
 
                 <ImageView

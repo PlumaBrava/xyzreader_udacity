@@ -6,23 +6,20 @@ import android.content.Intent;
 import android.database.Cursor;
 
 
-import android.graphics.Bitmap;
+
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.v4.content.Loader;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentPagerAdapter;
+
 import android.support.v4.app.LoaderManager;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
+
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -32,18 +29,14 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.graphics.Palette;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.Window;
+
 import android.view.WindowInsets;
 import android.widget.ImageView;
 
 import com.nextnut.xyreader_udacity.data.ArticleLoader;
-import com.nextnut.xyreader_udacity.data.ItemsContract;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
-import java.net.URL;
-import java.security.PublicKey;
+
+
 
 /**
  * An activity representing a single Article detail screen. This

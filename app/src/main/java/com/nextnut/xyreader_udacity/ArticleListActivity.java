@@ -160,7 +160,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
 
             if (mCursor == null) {
                 Log.i("List", "cursor Nulo");
-            }
+            } else{
 
             mCursor.moveToPosition(position);
             Log.i("List", "ID: " + Long.toString(getItemId(position)));
@@ -211,9 +211,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
                                 holder.marticle_subtitle.setBackgroundColor(mColorBackground);
                                 holder.marticle_title.setTextColor(mColorTextTitle);
                                 holder.marticle_subtitle.setTextColor(mColorTextSubtitle);
-                                Log.i("Glide", "Pallet actualizado " + mCursor.getString(ArticleLoader.Query.TITLE));
-                            } else {
-                                Log.i("Glide", "Pallet Null " + mCursor.getString(ArticleLoader.Query.TITLE));
+//                                Log.i("Glide", "Pallet actualizado " + mCursor.getString(ArticleLoader.Query.TITLE));
                             }
 
                         }
@@ -221,26 +219,26 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
                     .into(holder.mthumbnail);
 
 
-
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                        Context context = v.getContext();
-                        Intent intent = new Intent(context, ArticleDetailActivity.class);
-                        intent.putExtra(ArticleDetailFragment.ARG_ITEM_ID, getItemId(holder.getAdapterPosition()));
-                        Bundle bundle = null;
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                            bundle = ActivityOptionsCompat
-                                    .makeSceneTransitionAnimation(ArticleListActivity.this, v.findViewById(R.id.thumbnail), v.findViewById(R.id.thumbnail).getTransitionName())
-                                    .toBundle();
-                        }
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, ArticleDetailActivity.class);
+                    intent.putExtra(ArticleDetailFragment.ARG_ITEM_ID, getItemId(holder.getAdapterPosition()));
+                    Bundle bundle = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                        bundle = ActivityOptionsCompat
+                                .makeSceneTransitionAnimation(ArticleListActivity.this, v.findViewById(R.id.thumbnail), v.findViewById(R.id.thumbnail).getTransitionName())
+                                .toBundle();
+                    }
 //                        overridePendingTransition(R.anim.zoom_back_in, R.anim.zoom_back_out);
-                        context.startActivity(intent, bundle);
+                    context.startActivity(intent, bundle);
 
                 }
             });
 
+        }
         }
 
         @Override
