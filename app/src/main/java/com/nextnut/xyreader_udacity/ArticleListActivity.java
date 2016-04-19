@@ -232,7 +232,7 @@ public class ArticleListActivity extends AppCompatActivity implements LoaderMana
                                 .makeSceneTransitionAnimation(ArticleListActivity.this, v.findViewById(R.id.thumbnail), v.findViewById(R.id.thumbnail).getTransitionName())
                                 .toBundle();
                     }
-//                        overridePendingTransition(R.anim.zoom_back_in, R.anim.zoom_back_out);
+
                     context.startActivity(intent, bundle);
 
                 }

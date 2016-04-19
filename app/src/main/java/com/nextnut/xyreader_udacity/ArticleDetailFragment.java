@@ -295,7 +295,7 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
                                 mMetaBarView.setBackgroundColor(mColorBackground);
                                 mTitleTextView.setTextColor(mColorTextTitle);
                                 mBylineTextView.setTextColor(mColorTextSubtitle);
-                                Log.i("Glide", "Pallet actualizado "+mCursor.getString(ArticleLoader.Query.TITLE));
+//                                Log.i("Glide", "Pallet actualizado "+mCursor.getString(ArticleLoader.Query.TITLE));
                             }
 //                            else{
 //                                Log.i("Glide", "Pallet Null "+mCursor.getString(ArticleLoader.Query.TITLE));
@@ -323,10 +323,7 @@ public class ArticleDetailFragment  extends Fragment implements LoaderManager.Lo
             return Integer.MAX_VALUE;
         }
 
-        // account for parallax
-//        return mIsCard
-//                ? (int) mPhotoContainerView.getTranslationY() + mPhotoView.getHeight() - mScrollY
-//                : mPhotoView.getHeight() - mScrollY;
+
 
         return mPhotoView.getHeight() - mScrollY;
 
